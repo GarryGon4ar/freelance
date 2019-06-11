@@ -4,10 +4,10 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     USER_TYPE = (
-        ("1", "Developer"),
-        ("2", "Customer"),
+        ("developer", "Developer"),
+        ("customer", "Customer"),
     )
-    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE)
+    user_type = models.CharField(max_length=9, choices=USER_TYPE)
 
     def __str__(self):
         return self.username
