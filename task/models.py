@@ -7,7 +7,7 @@ class Task(models.Model):
     developer = models.ForeignKey(CustomUser, related_name='Developer', on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=100)
     description = models.TextField()
-    price = models.PositiveIntegerField()
+    award = models.PositiveIntegerField()
     finished = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
