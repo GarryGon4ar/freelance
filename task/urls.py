@@ -4,5 +4,5 @@ from .views import TaskList, TaskDetail
 
 urlpatterns = [
     path('', TaskList.as_view()),
-    path('/', TaskDetail.as_view()),
+    path('<int:pk>', TaskDetail.as_view()),
 ]

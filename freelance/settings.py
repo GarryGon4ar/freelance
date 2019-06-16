@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
+    'task.apps.TaskConfig',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
