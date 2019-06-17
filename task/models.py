@@ -4,7 +4,7 @@ from users.models import CustomUser
 
 class Task(models.Model):
     owner = models.ForeignKey(CustomUser, related_name='tasks', on_delete=models.CASCADE)
-    developer = models.ForeignKey(CustomUser, related_name='Developer', on_delete=models.SET_NULL, null=True)
+    developer = models.ForeignKey(CustomUser, related_name='Developer', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=100)
     description = models.TextField()
     award = models.PositiveIntegerField()
@@ -15,4 +15,4 @@ class Task(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return '{}-{}'.format(self.title, self.price)
+        return '{}-{}'.format(self.title, self.award)

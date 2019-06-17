@@ -3,7 +3,8 @@ from users.models import CustomUser
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'user_type', 'password')
+    list_display = ('email', 'username', 'user_type', 'balance')
+
 
 
 admin.site.register(CustomUser, UserAdmin)
