@@ -129,3 +129,9 @@ SITE_ID = 1
 STATIC_URL = '/static/'
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}

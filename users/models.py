@@ -9,4 +9,3 @@ class CustomUser(AbstractUser):
     )
     user_type = models.CharField(max_length=9, choices=USER_TYPE)
     balance = models.PositiveIntegerField(default=0)
-
