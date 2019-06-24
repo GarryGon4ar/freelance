@@ -21,10 +21,10 @@ $ python manage.py runsever
 
 ## USAGE
 
-to sign-up go to http://127.0.0.1:8000/api/users/
+to sign-up go to http://127.0.0.1:8000/blog/users/
 to sign-in go to http://127.0.0.1:8000/api/login/
 to sign-out go to http://127.0.0.1:8000/api/logout/
-to create a task go to http://127.0.0.1:8000/api/tasks/
+to create a task go to http://127.0.0.1:8000/blog/tasks/
 
 if you are a developer go to detail page of your task http://127.0.0.1:8000/api/tasks/id , 
            where id is number representing id of task you want to perform, and use post method to perform.
