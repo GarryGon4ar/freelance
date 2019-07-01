@@ -7,5 +7,6 @@ class CustomUser(AbstractUser):
         ("developer", "Developer"),
         ("customer", "Customer"),
     )
+    email = models.EmailField(verbose_name='email address',unique=True)
     user_type = models.CharField(max_length=9, choices=USER_TYPE)
     balance = models.PositiveIntegerField(default=0)

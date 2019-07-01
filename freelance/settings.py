@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_auth.registration',
     'users.apps.UsersConfig',
-    'api.apps.ApiConfig',
     'task.apps.TaskConfig',
 ]
 
@@ -129,9 +128,9 @@ SITE_ID = 1
 STATIC_URL = '/static/'
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-#
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     )
-# }
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
