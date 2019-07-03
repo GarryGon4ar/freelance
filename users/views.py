@@ -12,10 +12,14 @@ class UserListView(generics.ListCreateAPIView):
     permission_classes = (AllowAny, )
 
     def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.user.is_authenticated:
+            return Response({'detail': "Вы уже вошли в систему"},
+                            status=status.HTTP_403_FORBIDDEN)
+        else:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserDetailView(generics.RetrieveAPIView):

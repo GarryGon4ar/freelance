@@ -1,17 +1,15 @@
-from django.contrib.auth import get_user_model
+from rest_framework import status
 from rest_framework.authtoken.models import Token
-from task.views import TaskList
-from rest_framework.test import APITestCase, APIRequestFactory, APIClient
+from rest_framework.test import APITestCase, APIClient
 
 from users.models import CustomUser
+from users.serializers import UserSerializer
 
 
-class TestTaskList(APITestCase):
+class TestUser(APITestCase):
     def setUp(self):
-        self.factory = APIRequestFactory()
         self.client = APIClient()
-        self.view = TaskList.as_view()
-        self.uri = '/task/'
+        self.uri = '/user/'
         self.user = self.setup_user()
         self.token = Token.objects.create(user=self.user)
         self.token.save()
@@ -22,42 +20,59 @@ class TestTaskList(APITestCase):
         return User.objects.create_user(
             'test',
             email='testuser@test.com',
-            password='test'
+            password='test',
+            user_type='customer'
         )
 
-    def test_list(self):
-        request = self.factory.get(self.uri,
-            HTTP_AUTHORIZATION='Token {}'.format(self.token.key))
-        request.user = self.user
-        response = self.view(request)
-        self.assertEqual(response.status_code, 200,
-                         'Expected Response Code 200, received {0} instead.'
-                         .format(response.status_code))
+    def test_create_user(self):
+        data = {
+            'username': 'foobar',
+            'email': 'foobar@example.com',
+            'password': 'somepassword',
+            'user_type': 'developer',
+            'balance': 100,
+        }
 
-    def test_list2(self):
+        response = self.client.post(self.uri, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['username'], data['username'])
+        self.assertEqual(response.data['email'], data['email'])
+        self.assertEqual(response.data['user_type'], data['user_type'])
+        self.assertEqual(response.data['balance'], data['balance'])
+        self.assertFalse('password' in response.data)
+
+    def test_create_user_with_no_password(self):
+        data = {
+            'username': 'foobar',
+            'email': 'foobarbaz@example.com',
+            'password': ''
+        }
+
+        response = self.client.post(self.uri, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(CustomUser.objects.count(), 1)
+        self.assertEqual(len(response.data['password']), 1)
+
+    def test_users_list(self):
         self.client.login(username="test", password="test")
         response = self.client.get(self.uri)
         self.assertEqual(response.status_code, 200,
                          'Expected Response Code 200, received {0} instead.'
                          .format(response.status_code))
 
-    def test_create(self):
+    def test_sign_up_after_login(self):
         self.client.login(username="test", password="test")
-        params = {
-            "id": "1",
-            "award": '250',
-        }
-        response = self.client.post(self.uri, params)
-        self.assertEqual(response.status_code, 201,
-                         'Expected Response Code 201, received {0} instead.'
-                         .format(response.status_code))
-
+        response = self.client.post(self.uri,
+                                    {'username': 'test', 'email': 'testuser@test.com', 'password': 'test',
+                                     'user_type': 'developer', 'balance': '250', })
+        self.assertEqual(response.status_code, 403)
 
     def test_user_login(self):
-        response = self.client.post('/rest-auth/login/', {'username': 'test', 'email': 'testuser@test.com', 'password': 'test'})
+        response = self.client.post('/rest-auth/login/',
+                                    {'username': 'test', 'email': 'testuser@test.com', 'password': 'test'})
         self.assertEqual(response.status_code, 200)
 
     def test_user_not_exist(self):
-        response = self.client.get('/users/555')
+        self.client.login(username="test", password="test")
+        response = self.client.get('/user/555')
         self.assertEqual(response.status_code, 404)
-

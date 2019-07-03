@@ -3,13 +3,14 @@ from django.db.models import F
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, TaskDetailSerializer
 from .models import Task
 
 
 class TaskList(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -24,20 +25,22 @@ class TaskList(generics.ListCreateAPIView):
 
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    serializer_class = TaskDetailSerializer
 
     @transaction.atomic()
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         instance = self.get_object()
-
         if instance.finished:
             return Response({'detail': "Заказ уже выполнен"},
+                            status=status.HTTP_403_FORBIDDEN)
+        if self.request.user.user_type != 'developer':
+            return Response({'detail': "Заказчик не может выполнять задания"},
                             status=status.HTTP_403_FORBIDDEN)
 
         if instance.owner.balance < instance.award:
             return Response({'detail': "У заказчика не достаточно денег не балансе"},
                             status=status.HTTP_403_FORBIDDEN)
-        if self.request.user.user_type != 'customer':
+        else:
             instance.developer = self.request.user
             instance.developer.balance = F('balance') + instance.award
             instance.finished = True
@@ -45,8 +48,13 @@ class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
             owner = instance.owner
             owner.balance = F('balance') - instance.award
             owner.save()
-        else:
-            return Response({'detail': "Заказчик не может выполнять задания"},
-                            status=status.HTTP_403_FORBIDDEN)
 
-        return super().put(request, *args, **kwargs)
+        return super().patch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if self.request.user != instance.owner:
+            return Response({'detail': "Только сам заказчик может удалить заказ"},
+                            status=status.HTTP_403_FORBIDDEN)
+        else:
+            return super(TaskDetail, self).delete(request, *args, **kwargs)
