@@ -23,7 +23,9 @@ class TaskTest(APITestCase):
             'user',
             email='user@test.com',
             password='test',
-            user_type='customer'
+            user_type='customer',
+            balance='100',
+            expenses='0'
         )
 
     def test_task_list(self):
@@ -41,10 +43,9 @@ class TaskTest(APITestCase):
         params = {
             "title": "bla",
             "description": "bla bla",
-            "award": '250',
+            "award": '100',
         }
         response = self.client.post(self.uri, params)
-        self.assertEqual(response.data['owner'], self.user.pk)
         self.assertEqual(response.status_code, 201,
                          'Expected Response Code 201, received {0} instead.'
                          .format(response.status_code))

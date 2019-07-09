@@ -1,3 +1,5 @@
+from _decimal import Decimal
+
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
@@ -38,7 +40,6 @@ class TestUser(APITestCase):
         self.assertEqual(response.data['username'], data['username'])
         self.assertEqual(response.data['email'], data['email'])
         self.assertEqual(response.data['user_type'], data['user_type'])
-        self.assertEqual(response.data['balance'], data['balance'])
         self.assertFalse('password' in response.data)
 
     def test_create_user_with_no_password(self):
@@ -59,13 +60,6 @@ class TestUser(APITestCase):
         self.assertEqual(response.status_code, 200,
                          'Expected Response Code 200, received {0} instead.'
                          .format(response.status_code))
-
-    def test_sign_up_after_login(self):
-        self.client.login(username="test", password="test")
-        response = self.client.post(self.uri,
-                                    {'username': 'test', 'email': 'testuser@test.com', 'password': 'test',
-                                     'user_type': 'developer', 'balance': '250', })
-        self.assertEqual(response.status_code, 403)
 
     def test_user_login(self):
         response = self.client.post('/rest-auth/login/',

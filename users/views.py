@@ -1,5 +1,5 @@
-from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
+from rest_framework.status import HTTP_201_CREATED
+from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 

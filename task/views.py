@@ -18,13 +18,9 @@ class TaskList(ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    @transaction.atomic()
     def post(self, request, *args, **kwargs):
         if self.request.user.user_type == 'developer':
             return Response({'detail': "Только заказчик может создавать заказ."},
-                            status=HTTP_403_FORBIDDEN)
-        elif self.request.user.expenses > self.request.user.balance:
-            return Response({'detail': "У вас недостаточно средств, пожалуйста пополните баланс"},
                             status=HTTP_403_FORBIDDEN)
         return super().post(request, *args, **kwargs)
 
@@ -43,9 +39,6 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
             return Response({'detail': "Заказчик не может выполнять задания"},
                             status=HTTP_403_FORBIDDEN)
 
-        if instance.owner.balance < instance.award:
-            return Response({'detail': "У заказчика не достаточно денег не балансе"},
-                            status=HTTP_403_FORBIDDEN)
         else:
             instance.developer = self.request.user
             instance.developer.balance = F('balance') + Decimal(instance.award)
