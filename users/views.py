@@ -1,4 +1,5 @@
-from rest_framework import generics, status
+from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN
+from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
@@ -6,23 +7,19 @@ from .models import CustomUser
 from .serializers import UserSerializer
 
 
-class UserListView(generics.ListCreateAPIView):
+class UserListView(ListCreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AllowAny, )
 
     def create(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return Response({'detail': "Вы уже вошли в систему"},
-                            status=status.HTTP_403_FORBIDDEN)
-        else:
-            serializer = self.serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
 
-class UserDetailView(generics.RetrieveAPIView):
+class UserDetailView(RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)

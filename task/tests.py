@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient, APITestCase
 
@@ -62,7 +62,7 @@ class TaskTest(APITestCase):
         }
         self.client.login(username="user1", password="test1")
         response = self.client.post(self.uri, params)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_task_patch(self):
         self.client.login(username="user", password="test")
