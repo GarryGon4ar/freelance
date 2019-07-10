@@ -19,7 +19,7 @@ class TaskList(ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
     def post(self, request, *args, **kwargs):
-        if self.request.user.user_type == 'developer':
+        if self.request.user.user_type == 0 :
             return Response({'detail': "Только заказчик может создавать заказ."},
                             status=HTTP_403_FORBIDDEN)
         return super().post(request, *args, **kwargs)
@@ -35,7 +35,7 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
         if instance.finished:
             return Response({'detail': "Заказ уже выполнен"},
                             status=HTTP_423_LOCKED)
-        if self.request.user.user_type != 'developer':
+        if self.request.user.user_type != 0 :
             return Response({'detail': "Заказчик не может выполнять задания"},
                             status=HTTP_403_FORBIDDEN)
 

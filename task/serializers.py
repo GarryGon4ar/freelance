@@ -3,7 +3,6 @@ from _decimal import Decimal
 from django.db import transaction
 from django.db.models import F
 from rest_framework import serializers
-from rest_framework.fields import CurrentUserDefault
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import Task
 

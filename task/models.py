@@ -15,4 +15,4 @@ class Task(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return '{}-{}'.format(self.title, self.award)
+        return f'{self.title}-{self.award}'

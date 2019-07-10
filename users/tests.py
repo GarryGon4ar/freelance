@@ -5,25 +5,23 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
 
 from users.models import CustomUser
-from users.serializers import UserSerializer
 
 
 class TestUser(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.uri = '/user/'
+        self.uri = '/api/v1/users/'
         self.user = self.setup_user()
         self.token = Token.objects.create(user=self.user)
         self.token.save()
 
     @staticmethod
     def setup_user():
-        User = CustomUser
-        return User.objects.create_user(
-            'test',
+        return CustomUser.objects.create_user(
+            username='test',
             email='testuser@test.com',
             password='test',
-            user_type='customer'
+            user_type=1,
         )
 
     def test_create_user(self):
@@ -31,7 +29,7 @@ class TestUser(APITestCase):
             'username': 'foobar',
             'email': 'foobar@example.com',
             'password': 'somepassword',
-            'user_type': 'developer',
+            'user_type': 0,
             'balance': 100,
         }
 
@@ -62,11 +60,11 @@ class TestUser(APITestCase):
                          .format(response.status_code))
 
     def test_user_login(self):
-        response = self.client.post('/rest-auth/login/',
+        response = self.client.post('/api/v1/rest-auth/login/',
                                     {'username': 'test', 'email': 'testuser@test.com', 'password': 'test'})
         self.assertEqual(response.status_code, 200)
 
     def test_user_not_exist(self):
         self.client.login(username="test", password="test")
-        response = self.client.get('/user/555')
+        response = self.client.get('/api/v1/users/555')
         self.assertEqual(response.status_code, 404)
